@@ -1,5 +1,5 @@
-KeyUnit
-=======
+Key Unit
+========
 
 .. include:: ../refs/unit.key.ref
 
@@ -16,18 +16,21 @@ Support the following products:
     |KeyUnit|
 
 
-Micropython Example::
+Micropython Example:
 
-    import os, sys, io
-    import M5
-    from M5 import *
-    from unit import KeyUnit
-    key = KeyUnit((33,32)) # for core2
-    key.set_color(0x00FF00)
-    key.set_brightness(10)
-    key.get_key_state()
-    while True:
-        key.tick(None) # update key status
+    .. literalinclude:: ../../../examples/unit/key/cores3_key_example.py
+        :language: python
+        :linenos:
+
+
+UIFLOW2 Example:
+
+    |example.png|
+
+
+.. only:: builder_html
+
+    |cores3_key_example.m5f2|
 
 
 class KeyUnit
@@ -44,7 +47,7 @@ Constructors
 
     UIFLOW2:
 
-        |init.svg|
+        |init.png|
 
 
 Methods
@@ -58,7 +61,7 @@ Methods
 
     UIFLOW2:
 
-        |get_key_state.svg|
+        |get_key_state.png|
 
 
 .. method:: KeyUnit.set_color(color: int) -> None
@@ -69,7 +72,7 @@ Methods
 
     UIFLOW2:
 
-        |set_color.svg|
+        |set_color.png|
 
 
 .. method:: KeyUnit.set_brightness(br: int) -> None
@@ -80,7 +83,7 @@ Methods
 
     UIFLOW2:
 
-        |set_brightness.svg|
+        |set_brightness.png|
 
 
 .. method:: KeyUnit.isHolding()
@@ -89,7 +92,7 @@ Methods
 
     UIFLOW2:
 
-        |isHolding.svg|
+        |isHolding.png|
 
 
 .. method:: KeyUnit.isPressed()
@@ -98,7 +101,7 @@ Methods
 
     UIFLOW2:
 
-        |isPressed.svg|
+        |isPressed.png|
 
 
 .. method:: KeyUnit.isReleased()
@@ -107,7 +110,7 @@ Methods
 
     UIFLOW2:
 
-        |isReleased.svg|
+        |isReleased.png|
 
 
 .. method:: KeyUnit.wasClicked()
@@ -116,7 +119,7 @@ Methods
 
     UIFLOW2:
 
-        |wasClicked.svg|
+        |wasClicked.png|
 
 
 .. method:: KeyUnit.wasDoubleClicked()
@@ -125,7 +128,7 @@ Methods
 
     UIFLOW2:
 
-        |wasDoubleClicked.svg|
+        |wasDoubleClicked.png|
 
 
 .. method:: KeyUnit.wasHold()
@@ -134,7 +137,7 @@ Methods
 
     UIFLOW2:
 
-        |wasHold.svg|
+        |wasHold.png|
 
 
 .. method:: KeyUnit.wasPressed()
@@ -143,7 +146,7 @@ Methods
 
     UIFLOW2:
 
-        |wasPressed.svg|
+        |wasPressed.png|
 
 
 .. method:: KeyUnit.wasReleased()
@@ -152,7 +155,7 @@ Methods
 
     UIFLOW2:
 
-        |wasReleased.svg|
+        |wasReleased.png|
 
 
 .. method:: KeyUnit.wasSingleClicked()
@@ -161,7 +164,7 @@ Methods
 
     UIFLOW2:
 
-        |wasSingleClicked.svg|
+        |wasSingleClicked.png|
 
 
 Event Handling
@@ -173,7 +176,7 @@ Event Handling
 
     UIFLOW2:
 
-        |setCallback.svg|
+        |setCallback.png|
 
 
 Constants
@@ -181,35 +184,33 @@ Constants
 
 .. data:: KeyUnit.CB_TYPE
 
-    A Callback_Type object.
+    A CB_TYPE object.
 
 
-class Callback_Type
+class CB_TYPE
 -------------------
 
 Constants
 ---------
 
-.. data:: Callback_Type.WAS_CLICKED
+.. data:: CB_TYPE.WAS_CLICKED
 
     Single click event type.
 
 
-.. data:: Callback_Type.WAS_DOUBLECLICKED
+.. data:: CB_TYPE.WAS_DOUBLECLICKED
 
     Double click event type.
 
 
-.. data:: Callback_Type.WAS_HOLD
+.. data:: CB_TYPE.WAS_HOLD
 
     Long press event type.
 
-
-.. data:: Callback_Type.WAS_PRESSED
-
+.. data:: CB_TYPE.WAS_PRESSED
 
     Press event type
 
-.. data:: Callback_Type.WAS_RELEASED
+.. data:: CB_TYPE.WAS_RELEASED
 
     Release event type

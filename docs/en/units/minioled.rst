@@ -1,6 +1,6 @@
 
-MiniOLEDUnit
-============
+MiniOLED Unit
+==============
 
 .. include:: ../refs/unit.minioled.ref
 
@@ -8,41 +8,54 @@ MiniOLED UNIT is a 0.42-inch I2C interface OLED screen unit, it's a 72*40, monoc
 
 Support the following products:
 
-|MiniOLEDUnit|
-
-Micropython Example::
-    from unit import MiniOLEDUnit
-    from hardware import *
-    i2c0 = I2C(0, scl=Pin(33), sda=Pin(32), freq=100000)
-    display = MiniOLEDUnit(i2c).display
-    
-    display.clear(0xffffff) # Clear screen
-
-.. only:: builder_html
-
-class MiniOLEDUnit
-------------------
-
-Constructors
-------------
-
-.. class:: MiniOLEDUnit(port, address, freq)
-
-    Initialize the Unit MiniOLED
-
-    :param tuple port: The port to which the Unit MiniOLED is connected. port[0]: scl pin, port[1]: sda pin.
-    :param int|list|tuple address: I2C address of the Unit MiniOLED, default is 0x3D.
-    :param int freq: I2C frequency of the Unit MiniOLED.
-
-    UIFLOW2:
-
-        |init.svg|
+    |MiniOLEDUnit|
 
 
-Methods
+UiFlow2 Example
+---------------
+
+Draw Text
+^^^^^^^^^
+
+Open the |cores3_minioled_example.m5f2| project in UiFlow2.
+
+This example displays the text "Mini" on the screen.
+
+UiFlow2 Code Block:
+
+    |example.png|
+
+Example output:
+
+    None
+
+
+MicroPython Example
+-------------------
+
+Draw Text
+^^^^^^^^^
+
+This example displays the text "Mini" on the screen.
+
+MicroPython Code Block:
+
+    .. literalinclude:: ../../../examples/unit/minioled/cores3_minioled_example.py
+        :language: python
+        :linenos:
+
+Example output:
+
+    None
+
+
+**API**
 -------
 
+class MiniOLEDUnit
+^^^^^^^^^^^^^^^^^^
 
+.. autoclass:: unit.minioled.MiniOLEDUnit
+    :members:
 
-
-
+    MiniOLEDUnit class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.

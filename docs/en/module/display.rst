@@ -1,6 +1,8 @@
 
-DisplayModule
-=============
+Display Module
+==============
+
+.. sku: M126
 
 .. include:: ../refs/module.display.ref
 
@@ -8,47 +10,51 @@ Display Module 13.2 is an expansion module for HD audio and video, using GAOYUN 
 
 Support the following products:
 
-|DisplayModule|
-
-Micropython Example::
-
-    import os, sys, io
-    import M5
-    from M5 import *
-    from module import DisplayModule
-    disp = DisplayModule()
-    disp.display.fill(0)
+    |DisplayModule|
 
 
-.. only:: builder_html
+UiFlow2 Example
+---------------
 
-class DisplayModule
+Draw Text
+^^^^^^^^^
+
+Open the |cores3_display_example.m5f2| project in UiFlow2.
+
+This example displays the text "Display" on the screen.
+
+UiFlow2 Code Block:
+
+    |example.png|
+
+Example output:
+
+    None
+
+
+MicroPython Example
 -------------------
 
-Constructors
-------------
+This example displays the text "Display" on the screen.
 
-.. class:: DisplayModule(port, width, height, refresh_rate, pixel_clock, scale_w, scale_h)
+MicroPython Code Block:
 
-    Initialize the Module Display
+    .. literalinclude:: ../../../examples/module/display/cores3_display_example.py
+        :language: python
+        :linenos:
 
-    :param tuple port: The port to which the Module Display is connected. port[0]: not used, port[1]: dac pin.
-    :param int width: The width of the Module Display.
-    :param int height: The height of the Module Display.
-    :param int refresh_rate: The refresh rate of the Module Display.
-    :param int pixel_clock: The pixel clock of the Module Display.
-    :param int scale_w: The scale width of the Module Display.
-    :param int scale_h: The scale height of the Module Display.
+Example output:
 
-    UIFLOW2:
-
-        |init.svg|
+    None
 
 
-Methods
+**API**
 -------
 
+Class DisplayModule
+^^^^^^^^^^^^^^^^^^^
 
+.. autoclass:: module.display.DisplayModule
+    :members:
 
-
-
+    DisplayModule class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.

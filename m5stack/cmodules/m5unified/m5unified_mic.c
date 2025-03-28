@@ -14,8 +14,9 @@ MAKE_METHOD_0(mic, isEnabled);
 MAKE_METHOD_0(mic, isRecording);
 MAKE_METHOD_KW(mic, setSampleRate, 1);
 MAKE_METHOD_KW(mic, record, 1);
+MAKE_METHOD_KW(mic, recordWavFile, 1);
 
-STATIC const mp_rom_map_elem_t mic_member_table[] = {
+static const mp_rom_map_elem_t mic_member_table[] = {
     MAKE_TABLE(mic, config),
     MAKE_TABLE(mic, begin),
     MAKE_TABLE(mic, end),
@@ -24,9 +25,10 @@ STATIC const mp_rom_map_elem_t mic_member_table[] = {
     MAKE_TABLE(mic, isRecording),
     MAKE_TABLE(mic, setSampleRate),
     MAKE_TABLE(mic, record),
+    MAKE_TABLE(mic, recordWavFile),
 };
 
-STATIC MP_DEFINE_CONST_DICT(mic_member, mic_member_table);
+static MP_DEFINE_CONST_DICT(mic_member, mic_member_table);
 
 #ifdef MP_OBJ_TYPE_GET_SLOT
 MP_DEFINE_CONST_OBJ_TYPE(

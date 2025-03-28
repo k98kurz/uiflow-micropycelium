@@ -21,6 +21,7 @@ boards := \
 	M5STACK_StickC_PLUS2:stickcplus2 \
 	M5STACK_StickC_PLUS:stickcplus   \
 	M5STACK_Fire:fire                \
+	M5STACK_NanoC6:nanoc6            \
 	M5STACK_Basic:basic              \
 	M5STACK_Basic_4MB:basic          \
 	M5STACK_Capsule:capsule          \
@@ -29,6 +30,7 @@ boards := \
 	M5STACK_Dial:dial                \
 	M5STACK_Cardputer:cardputer      \
 	M5STACK_Paper:paper              \
+	M5STACK_PaperS3:papers3          \
 	M5STACK_DinMeter:dinmeter        \
 	M5STACK_StickC:stickc            \
 	M5STACK_Station:station          \
@@ -36,7 +38,9 @@ boards := \
 	M5STACK_Stamp_PICO:stamppico     \
 	M5STACK_Atom_Matrix:atommatrix   \
 	M5STACK_AtomU:atomu              \
-	M5STACK_Atom_Echo:atomecho
+	M5STACK_Atom_Echo:atomecho       \
+	M5STACK_AtomS3R:atoms3r          \
+	M5STACK_StamPLC:stamplc
 
 define find_board
 $(if $(filter $(1):%,$(boards)),$(word 2,$(subst :, ,$(filter $(1):%,$(boards)))),none)
@@ -55,6 +59,7 @@ BOARD_TYPE_DEF := \
 	stickcplus2 \
 	stickcplus  \
 	fire        \
+	nanoc6      \
 	basic       \
 	capsule     \
 	coreink     \
@@ -62,6 +67,7 @@ BOARD_TYPE_DEF := \
 	dial        \
 	cardputer   \
 	paper       \
+	papers3     \
 	dinmeter    \
 	stickc      \
 	station     \
@@ -69,7 +75,9 @@ BOARD_TYPE_DEF := \
 	stamppico   \
 	atommatrix  \
 	atomu       \
-	atomecho
+	atomecho    \
+	atoms3r     \
+	stamplc
 
 # Select the board type to build, default is None
 # This value affects which folder in the "./fs/system/" directory is pack into "fs-system.bin"
@@ -90,7 +98,8 @@ TINY_BOARD_TYPE_DEF = \
 	M5STACK_Stamp_PICO  \
 	M5STACK_Atom_Matrix \
 	M5STACK_AtomU       \
-	M5STACK_Atom_Echo
+	M5STACK_Atom_Echo   \
+	M5STACK_NanoC6
 
 ifneq ($(filter $(BOARD),$(TINY_BOARD_TYPE_DEF)),)
 TINY_FLAG ?= 1
@@ -258,12 +267,17 @@ littlefs:
 mpy-cross:
 	make -C ../micropython/mpy-cross
 
-# The two submodules do not belong to the same repository
-# micropython submodule belong to uiflow_micropython
-# berkeley-db-1.xx submodule belong to micropython submodule
+# Running the build with ECHO_SUBMODULES set will trigger py/mkrules.cmake to
+# print out the value of the GIT_SUBMODULES variable, prefixed with
+# "GIT_SUBMODULES", and then abort. This extracts out that line from the idf.py
+# output and passes the list of submodules to py/mkrules.mk which does the
+# `git submodule init` on each.
 submodules:
 	git submodule update --init ../tools/littlefs/mbed-littlefs
 	git submodule update --init ./components/esp32-camera
+	git submodule update --init ./components/esp_dl
+	git submodule update --init ./components/esp-code-scanner
+	git submodule update --init ./components/epdiy
 	git submodule update --init ./components/M5Unified/M5GFX
 	git submodule update --init ./components/M5Unified/M5Unified
 	git submodule update --init --recursive ./components/lv_bindings
@@ -273,22 +287,34 @@ submodules:
 		git submodule update --init components/esp-adf-libs && \
 		git submodule update --init components/esp-sr && \
 		cd -
-	cd ./../micropython && git submodule update --init $(addprefix ./,$(GIT_SUBMODULES)) && cd -
+	cd ../micropython && \
+		git submodule update --init lib/berkeley-db-1.xx && \
+		git submodule update --init lib/tinyusb && \
+		git submodule update --init lib/micropython-lib && \
+		cd -
 
 # Apply patches
 patch:
 	$(call Package/patche,$(abspath ./components/lv_bindings),$(abspath ./patches/0002_avoid_lv_bindings_compile_error.patch))
-	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0003-modtime-Add-timezone.patch))
-	$(call Package/patche,$(abspath $(IDF_PATH)),$(abspath ./patches/1000-WIP-Compatible-with-esp-adf-v2.6.patch))
-	$(call Package/patche,$(abspath ./components/M5Unified/M5Unified),$(abspath ./patches/2003-Support-LTR553.patch))
-	$(call Package/patche,$(abspath $(ADF_PATH)),$(abspath ./patches/3000-commponents-audio_board-Add-ESP32_S3_BOX_3-board.patch))
-	$(call Package/patche,$(abspath $(ADF_PATH)),$(abspath ./patches/3001-commponents-audio_board-Add-M5STACK-CoreS3-board.patch))
+	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0004-micropython-1.24-machine-adc-v5.x.diff))
+	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0005-micropython-fix-SDCard-16223.patch))
+	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0006-modtime-add-timezone-method.patch))
+	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0007-Add-set-default-netif-method.patch))
+	$(call Package/patche,$(abspath ./../micropython),$(abspath ./patches/0008-machine_uart-add-uart-mode.patch))
+	$(call Package/patche,$(abspath $(IDF_PATH)),$(abspath ./patches/1003-WIP-Compatible-with-esp-adf-v2.7.diff))
+	$(call Package/patche,$(abspath ./components/M5Unified/M5Unified),$(abspath ./patches/2005-Support-LTR553.patch))
+	$(call Package/patche,$(abspath $(ADF_PATH)),$(abspath ./patches/3002-Modify-i2s_stream_idf5.patch))
+	$(call Package/patche,$(abspath ./components/epdiy),$(abspath ./patches/4001-Avoid-epdiy-compilation-failure-on-esp32-c6.patch))
 
 # Unapply patches
 unpatch:
 	$(call Package/unpatche,$(abspath ./components/lv_bindings),$(abspath ./patches/0002_avoid_lv_bindings_compile_error.patch))
-	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0003-modtime-Add-timezone.patch))
-	$(call Package/unpatche,$(abspath $(IDF_PATH)),$(abspath ./patches/1000-WIP-Compatible-with-esp-adf-v2.6.patch))
-	$(call Package/unpatche,$(abspath ./components/M5Unified/M5Unified),$(abspath ./patches/2003-Support-LTR553.patch))
-	$(call Package/unpatche,$(abspath $(ADF_PATH)),$(abspath ./patches/3001-commponents-audio_board-Add-M5STACK-CoreS3-board.patch))
-	$(call Package/unpatche,$(abspath $(ADF_PATH)),$(abspath ./patches/3000-commponents-audio_board-Add-ESP32_S3_BOX_3-board.patch))
+	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0008-machine_uart-add-uart-mode.patch))
+	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0007-Add-set-default-netif-method.patch))
+	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0006-modtime-add-timezone-method.patch))
+	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0005-micropython-fix-SDCard-16223.patch))
+	$(call Package/unpatche,$(abspath ./../micropython),$(abspath ./patches/0004-micropython-1.24-machine-adc-v5.x.diff))
+	$(call Package/unpatche,$(abspath $(IDF_PATH)),$(abspath ./patches/1003-WIP-Compatible-with-esp-adf-v2.7.diff))
+	$(call Package/unpatche,$(abspath ./components/M5Unified/M5Unified),$(abspath ./patches/2005-Support-LTR553.patch))
+	$(call Package/unpatche,$(abspath $(ADF_PATH)),$(abspath ./patches/3002-Modify-i2s_stream_idf5.patch))
+	$(call Package/unpatche,$(abspath ./components/epdiy),$(abspath ./patches/4001-Avoid-epdiy-compilation-failure-on-esp32-c6.patch))

@@ -83,16 +83,26 @@ set(MICROPY_SOURCE_PORT
     ${PROJECT_DIR}/../micropython/ports/esp32/esp32_partition.c
     ${PROJECT_DIR}/../micropython/ports/esp32/esp32_rmt.c
     ${PROJECT_DIR}/../micropython/ports/esp32/esp32_ulp.c
-    ${PROJECT_DIR}/../micropython/ports/esp32/modesp32.c
+    ${PROJECT_DIR}/modesp32.c
     ${PROJECT_DIR}/../micropython/ports/esp32/machine_wdt.c
     ${PROJECT_DIR}/../micropython/ports/esp32/mpthreadport.c
     ${PROJECT_DIR}/machine_rtc.c
     ${PROJECT_DIR}/../micropython/ports/esp32/machine_sdcard.c
 )
 
-if (BOARD_TYPE STREQUAL "cores3" OR BOARD_TYPE STREQUAL "core2")
+if (
+    BOARD_TYPE STREQUAL "cores3" 
+    OR BOARD_TYPE STREQUAL "core2" 
+    OR BOARD_TYPE STREQUAL "paper" 
+    OR BOARD_TYPE STREQUAL "basic"
+    OR BOARD_TYPE STREQUAL "fire"
+    OR BOARD_TYPE STREQUAL "capsule"
+    OR BOARD_TYPE STREQUAL "tough"
+)
+    LIST(APPEND MICROPY_SOURCE_PORT ${PROJECT_DIR}/machine_sdcard.c)
     LIST(APPEND MICROPY_SOURCE_PORT ${PROJECT_DIR}/machine_hw_spi.c)
 else()
+    LIST(APPEND MICROPY_SOURCE_PORT ${PROJECT_DIR}/../micropython/ports/esp32/machine_sdcard.c)
     LIST(APPEND MICROPY_SOURCE_PORT ${PROJECT_DIR}/../micropython/ports/esp32/machine_hw_spi.c)
 endif()
 
@@ -173,6 +183,7 @@ set(IDF_COMPONENTS
     M5Unified
     esp32-camera
     uiflow_utility
+    esp_dmx
 )
 
 if(IDF_VERSION_MINOR GREATER_EQUAL 1 OR IDF_VERSION_MAJOR GREATER_EQUAL 5)

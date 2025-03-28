@@ -7,7 +7,7 @@
 #include "m5unified.h"
 
 // board type
-STATIC const mp_rom_map_elem_t m5_board_member_table[] = {
+static const mp_rom_map_elem_t m5_board_member_table[] = {
     /* *FORMAT-OFF* */
     // with display boards
     { MP_ROM_QSTR(MP_QSTR_unknown),         MP_ROM_INT(0) },
@@ -26,6 +26,9 @@ STATIC const mp_rom_map_elem_t m5_board_member_table[] = {
     { MP_ROM_QSTR(MP_QSTR_M5DinMeter),      MP_ROM_INT(13) },
     { MP_ROM_QSTR(MP_QSTR_M5Cardputer),     MP_ROM_INT(14) },
     { MP_ROM_QSTR(MP_QSTR_M5AirQ),          MP_ROM_INT(15) },
+    { MP_ROM_QSTR(MP_QSTR_M5AtomS3R),       MP_ROM_INT(18) },
+    { MP_ROM_QSTR(MP_QSTR_M5PaperS3),       MP_ROM_INT(19) },
+    { MP_ROM_QSTR(MP_QSTR_M5StamPLC),       MP_ROM_INT(21) },
     // non display boards
     { MP_ROM_QSTR(MP_QSTR_M5Atom),          MP_ROM_INT(128) },
     { MP_ROM_QSTR(MP_QSTR_M5AtomPsram),     MP_ROM_INT(129) },
@@ -39,8 +42,9 @@ STATIC const mp_rom_map_elem_t m5_board_member_table[] = {
     { MP_ROM_QSTR(MP_QSTR_M5AtomS3Lite),    MP_ROM_INT(137) },
     { MP_ROM_QSTR(MP_QSTR_M5AtomS3U),       MP_ROM_INT(138) },
     { MP_ROM_QSTR(MP_QSTR_M5Capsule),       MP_ROM_INT(139) },
-    { MP_ROM_QSTR(MP_QSTR_M5AtomMatrix),    MP_ROM_INT(140) },
-    { MP_ROM_QSTR(MP_QSTR_M5AtomEcho),      MP_ROM_INT(141) },
+    { MP_ROM_QSTR(MP_QSTR_M5NanoC6),        MP_ROM_INT(140) },
+    { MP_ROM_QSTR(MP_QSTR_M5AtomMatrix),    MP_ROM_INT(141) },
+    { MP_ROM_QSTR(MP_QSTR_M5AtomEcho),      MP_ROM_INT(142) },
     // external displays
     { MP_ROM_QSTR(MP_QSTR_M5ATOMDisplay),   MP_ROM_INT(192) },
     { MP_ROM_QSTR(MP_QSTR_M5UnitLCD),       MP_ROM_INT(193) },
@@ -53,7 +57,7 @@ STATIC const mp_rom_map_elem_t m5_board_member_table[] = {
     { MP_ROM_QSTR(MP_QSTR_M5ModuleRCA),     MP_ROM_INT(200) },
     /* *FORMAT-ON* */
 };
-STATIC MP_DEFINE_CONST_DICT(m5_board_member, m5_board_member_table);
+static MP_DEFINE_CONST_DICT(m5_board_member, m5_board_member_table);
 
 #ifdef MP_OBJ_TYPE_GET_SLOT
 MP_DEFINE_CONST_OBJ_TYPE(
@@ -71,18 +75,20 @@ const mp_obj_type_t m5_board_type = {
 #endif
 
 // -------- M5 wrapper
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(m5_begin_obj, 0, 1, m5_begin);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(m5_add_display_obj, m5_add_display);
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(m5_update_obj, m5_update);
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(m5_end_obj, m5_end);
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(m5_getBoard_obj, m5_getBoard);
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(m5_getDisplayCount_obj, m5_getDisplayCount);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(m5_begin_obj, 0, 1, m5_begin);
+static MP_DEFINE_CONST_FUN_OBJ_3(m5_add_display_obj, m5_add_display);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_create_speaker_obj, m5_create_speaker);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_create_mic_obj, m5_create_mic);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_update_obj, m5_update);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_end_obj, m5_end);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_getBoard_obj, m5_getBoard);
+static MP_DEFINE_CONST_FUN_OBJ_0(m5_getDisplayCount_obj, m5_getDisplayCount);
 MAKE_METHOD_0(m5, Displays);
 MAKE_METHOD_0(m5, getDisplay);
 MAKE_METHOD_0(m5, getDisplayIndex);
 MAKE_METHOD_0(m5, setPrimaryDisplay);
 
-STATIC const mp_rom_map_elem_t mp_module_m5_globals_table[] = {
+static const mp_rom_map_elem_t mp_module_m5_globals_table[] = {
     /* *FORMAT-OFF* */
     { MP_ROM_QSTR(MP_QSTR___name__),          MP_ROM_QSTR(MP_QSTR_M5) },
     { MP_ROM_QSTR(MP_QSTR_BOARD),             MP_ROM_PTR(&m5_board_type) },
@@ -104,6 +110,8 @@ STATIC const mp_rom_map_elem_t mp_module_m5_globals_table[] = {
 
     { MP_ROM_QSTR(MP_QSTR_begin),             MP_ROM_PTR(&m5_begin_obj) },
     { MP_ROM_QSTR(MP_QSTR_addDisplay),        MP_ROM_PTR(&m5_add_display_obj) },
+    { MP_ROM_QSTR(MP_QSTR_createSpeaker),     MP_ROM_PTR(&m5_create_speaker_obj) },
+    { MP_ROM_QSTR(MP_QSTR_createMic),         MP_ROM_PTR(&m5_create_mic_obj) },
     { MP_ROM_QSTR(MP_QSTR_update),            MP_ROM_PTR(&m5_update_obj) },
     { MP_ROM_QSTR(MP_QSTR_end),               MP_ROM_PTR(&m5_end_obj) },
     { MP_ROM_QSTR(MP_QSTR_getBoard),          MP_ROM_PTR(&m5_getBoard_obj) },
@@ -114,7 +122,7 @@ STATIC const mp_rom_map_elem_t mp_module_m5_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_setPrimaryDisplay), MP_ROM_PTR(&m5_setPrimaryDisplay_obj) },
     /* *FORMAT-ON* */
 };
-STATIC MP_DEFINE_CONST_DICT(mp_module_m5_globals, mp_module_m5_globals_table);
+static MP_DEFINE_CONST_DICT(mp_module_m5_globals, mp_module_m5_globals_table);
 
 // Define module object.
 const mp_obj_module_t mp_module_m5 = {

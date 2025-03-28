@@ -19,7 +19,7 @@ build-job:
   script:
     - sudo apt-get update -qy
     - sudo apt-get install git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0 -y
-    - source tools/ci.sh && ci_esp32_idf504_setup
+    - source tools/ci.sh && ci_esp32_idf522_setup
     - source tools/ci.sh && ci_esp32_nightly_build
   artifacts:
     paths:
@@ -39,7 +39,8 @@ build-docs:
   script:
     - echo "Building the documentation..."
     - cd docs
-    - apt install python3-sphinx
+    - python3 -m venv .
+    - source bin/activate
     - pip3 install -r requirements.txt
     - sphinx-build -b html -D language=zh_CN ./en/ build/html/zh_CN
     - sphinx-build -b html -D language=en ./en/ build/html/en

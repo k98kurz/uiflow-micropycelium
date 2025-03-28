@@ -1,8 +1,9 @@
 LCD Unit
 ========
 
-.. include:: ../refs/unit.lcd.ref
+.. sku: U120
 
+.. include:: ../refs/unit.lcd.ref
 
 Unit LCD is a 1.14 inch color LCD expansion screen unit. It adopts ST7789V2
 drive scheme, the resolution is 135*240, and it supports
@@ -14,45 +15,56 @@ which can easily adsorb the metal surface for fixing. The LCD screen extension
 is suitable for embedding in various instruments or control devices that need
 to display simple content as a display panel.
 
-
 Support the following products:
 
     |LCDUnit|
 
 
-Micropython example::
-    from unit import LCDUnit
-    from hardware import *
-    i2c0 = I2C(0, scl=Pin(33), sda=Pin(32), freq=100000)
-    display = LCDUnit(i2c).display
-    
-    display.clear(0xffffff) # Clear screen
+UiFlow2 Example
+---------------
 
-.. only:: builder_html
+Draw Text
+^^^^^^^^^
 
-class LCDUnit
--------------
+Open the |cores3_lcd_example.m5f2| project in UiFlow2.
 
-Constructors
-------------
+This example displays the text "LCD" on the screen.
 
-.. class:: LCDUnit(port, address, freq)
+UiFlow2 Code Block:
 
-    Initialize the Unit LCD
+    |example.png|
 
-    :param tuple port: The port to which the Unit LCDUnit is connected. port[0]: scl pin, port[1]: sda pin.
-    :param int|list|tuple address: I2C address of the Unit LCDUnit, default is 0x3D.
-    :param int freq: I2C frequency of the Unit LCDUnit.
+Example output:
 
-    UIFLOW2:
-
-        |init.svg|
+    None
 
 
-Methods
+MicroPython Example
+-------------------
+
+Draw Text
+^^^^^^^^^
+
+This example displays the text "LCD" on the screen.
+
+MicroPython Code Block:
+
+    .. literalinclude:: ../../../examples/unit/lcd/cores3_lcd_example.py
+        :language: python
+        :linenos:
+
+Example output:
+
+    None
+
+
+**API**
 -------
 
+class LCDUnit
+^^^^^^^^^^^^^
 
+.. autoclass:: unit.lcd.LCDUnit
+    :members:
 
-
-
+    LCDUnit class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.

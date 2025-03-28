@@ -110,6 +110,11 @@ def startup(boot_opt, timeout: int = 60) -> None:
 
             atomlite = AtomS3Lite_Startup()
             atomlite.startup(ssid, pswd, timeout)
+        elif board_id == M5.BOARD.M5AtomS3R:
+            from .atoms3r import AtomS3R_Startup
+
+            atoms3r = AtomS3R_Startup()
+            atoms3r.startup(ssid, pswd, timeout)
         elif board_id == M5.BOARD.M5AtomMatrix:
             from .atommatrix import AtomMatrix_Startup
 
@@ -187,7 +192,11 @@ def startup(boot_opt, timeout: int = 60) -> None:
 
             cardputer = Cardputer_Startup()
             cardputer.startup(ssid, pswd, timeout)
+        elif board_id == M5.BOARD.M5NanoC6:
+            from .nanoc6 import NanoC6_Startup
 
+            nanoc6 = NanoC6_Startup()
+            nanoc6.startup(ssid, pswd, timeout)
         elif board_id == M5.BOARD.M5Paper:
             from .paper import Paper_Startup
 
@@ -215,6 +224,18 @@ def startup(boot_opt, timeout: int = 60) -> None:
 
             tough = Tough_Startup()
             tough.startup(ssid, pswd, timeout)
+
+        elif board_id == M5.BOARD.M5PaperS3:
+            from .papers3 import PaperS3_Startup
+
+            papers3 = PaperS3_Startup()
+            papers3.startup(ssid, pswd, timeout)
+
+        elif board_id == M5.BOARD.M5StamPLC:
+            from .stamplc import StampPLC_Startup
+
+            station = StampPLC_Startup()
+            station.startup(ssid, pswd, timeout)
 
     # Only connect to network, not show any menu
     elif boot_opt is BOOT_OPT_NETWORK:

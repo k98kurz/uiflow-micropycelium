@@ -1,6 +1,7 @@
+RCA Module
+==========
 
-RCAModule
-=========
+.. sku: M125
 
 .. include:: ../refs/module.rca.ref
 
@@ -8,50 +9,54 @@ Module RCA is a female jack terminal block for transmitting composite video (aud
 
 Support the following products:
 
-|RCAModule|
-
-Micropython Example::
-
-    import os, sys, io
-    import M5
-    from M5 import *
-    from module import RCAModule
-    rca = RCAModule()
-    rca.display.fill(0)
+    |RCAModule|
 
 
-UIFLOW2 Example:
-
-    |example.svg|
-
-.. only:: builder_html
-
-class RCAModule
+UiFlow2 Example
 ---------------
 
-Constructors
-------------
+Draw Text
+^^^^^^^^^
 
-.. class:: RCAModule(port, width, height, signal_type, output_level, use_psram)
+Open the |core2_rca_example.m5f2| project in UiFlow2.
 
-    Initialize the Module RCA
+This example displays the text "RCA" on the screen.
 
-    :param tuple port: The port to which the Module RCA is connected. port[0]: not used, port[1]: dac pin.
-    :param int width: The width of the RCA display.
-    :param int height: The height of the RCA display.
-    :param int signal_type: The signal type of the RCA display. NTSC&#x3D;0, NTSC_J&#x3D;1, PAL&#x3D;2, PAL_M&#x3D;3, PAL_N&#x3D;4.
-    :param int output_level: The output level of the RCA display.
-    :param int use_psram: The use of psram of the RCA display.
+UiFlow2 Code Block:
 
-    UIFLOW2:
+    |example.png|
 
-        |init.svg|
+Example output:
+
+    None
 
 
-Methods
+MicroPython Example
+-------------------
+
+Draw Text
+^^^^^^^^^
+
+This example displays the text "RCA" on the screen.
+
+MicroPython Code Block:
+
+    .. literalinclude:: ../../../examples/module/rca/core2_rca_example.py
+        :language: python
+        :linenos:
+
+Example output:
+
+    None
+
+
+**API**
 -------
 
+Class RCAModule
+^^^^^^^^^^^^^^^
 
+.. autoclass:: module.rca.RCAModule
+    :members:
 
-
-
+    RCAModule class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.

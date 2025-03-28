@@ -1,0 +1,22 @@
+..  |Atom CAN| image:: https://static-cdn.m5stack.com/resource/docs/products/atom/atom_can/atom_can_01.webp
+    :target: https://docs.m5stack.com/en/atom/atom_can
+    :height: 200px
+    :width: 200px
+
+.. |Atomic CAN Base| image:: https://static-cdn.m5stack.com/resource/docs/products/atom/Atomic%20CAN%20Base/img-8c8eb3c4-9657-4330-9e1a-a0f5f3290197.webp
+    :target: https://docs.m5stack.com/en/atom/Atomic%20CAN%20Base
+    :height: 200px
+    :width: 200px
+
+.. |init.png| image:: https://m5stack.oss-cn-shenzhen.aliyuncs.com/mpy_docs/base/can/init.png
+
+.. |example.png| image:: https://static-cdn.m5stack.com/mpy_docs/base/can/example.png
+
+.. |atoms3_can_example.m5f2| raw:: html
+
+    <a
+        href="https://uiflow2.m5stack.com/?example=https://raw.githubusercontent.com/m5stack/uiflow-micropython/develop/examples/base/can/atoms3_can_example.m5f2"
+        target="_blank"
+    >
+        atoms3_can_example.m5f2
+    </a>

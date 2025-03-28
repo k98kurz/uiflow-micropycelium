@@ -36,15 +36,17 @@ extern "C"
 #include "mpy_m5unified.h"
 #include "mphalport.h"
 #include <driver/i2c.h>
-#include <driver/periph_ctrl.h>
+// #include <driver/periph_ctrl.h>
 
 typedef struct _machine_hw_i2c_obj_t {
     mp_obj_base_t base;
+    i2c_port_t port : 8;
+    gpio_num_t scl : 8;
+    gpio_num_t sda : 8;
+    // Start of modification section, by M5Stack
     uint8_t pos;
-    i2c_port_t port;
-    int8_t scl;
-    int8_t sda;
     uint32_t freq;
+    // End of modification section, by M5Stack
 } machine_hw_i2c_obj_t;
 
 static void m5_btns_callbacks_check(void);
@@ -73,6 +75,7 @@ static void m5_config_helper_module_display(mp_obj_t config_obj, m5::M5Unified::
         mp_raise_TypeError("module_display must be a dict");
     }
 
+    cfg.module_display = M5ModuleDisplay::config_t();
     mp_map_t *config_map = mp_obj_dict_get_map(config_obj);
 
     for (size_t i = 0; i < config_map->alloc; i++) {
@@ -83,7 +86,7 @@ static void m5_config_helper_module_display(mp_obj_t config_obj, m5::M5Unified::
             const char *key_str = mp_obj_str_get_str(key);
 
             if (strcmp(key_str, "enabled") == 0) {
-                cfg.external_display.module_display = mp_obj_get_int(value);
+                cfg.external_display.module_display = mp_obj_is_true(value);
             } else if (strcmp(key_str, "width") == 0) {
                 cfg.module_display.logical_width = mp_obj_get_int(value);
             } else if (strcmp(key_str, "height") == 0) {
@@ -105,12 +108,51 @@ static void m5_config_helper_module_display(mp_obj_t config_obj, m5::M5Unified::
     }
 }
 
+static void m5_config_helper_atom_display(mp_obj_t config_obj, m5::M5Unified::config_t &cfg) {
+    if (!MP_OBJ_IS_TYPE(config_obj, &mp_type_dict)) {
+        mp_raise_TypeError("atom_display must be a dict");
+    }
+
+    cfg.atom_display = M5AtomDisplay::config_t();
+    mp_map_t *config_map = mp_obj_dict_get_map(config_obj);
+
+    for (size_t i = 0; i < config_map->alloc; i++) {
+        if (MP_MAP_SLOT_IS_FILLED(config_map, i)) {
+            mp_obj_t key = config_map->table[i].key;
+            mp_obj_t value = config_map->table[i].value;
+
+            const char *key_str = mp_obj_str_get_str(key);
+
+            if (strcmp(key_str, "enabled") == 0) {
+                cfg.external_display.atom_display = mp_obj_is_true(value);
+            } else if (strcmp(key_str, "width") == 0) {
+                cfg.atom_display.logical_width = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "height") == 0) {
+                cfg.atom_display.logical_height = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "refresh_rate") == 0) {
+                cfg.atom_display.refresh_rate = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "output_width") == 0) {
+                cfg.atom_display.output_width = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "output_height") == 0) {
+                cfg.atom_display.output_height = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "scale_w") == 0) {
+                cfg.atom_display.scale_w = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "scale_h") == 0) {
+                cfg.atom_display.scale_h = mp_obj_get_int(value);
+            } else if (strcmp(key_str, "pixel_clock") == 0) {
+                cfg.atom_display.pixel_clock = mp_obj_get_int(value);
+            }
+        }
+    }
+}
+
 #if CONFIG_IDF_TARGET_ESP32
 static void m5_config_helper_module_rca(mp_obj_t config_obj, m5::M5Unified::config_t &cfg) {
     if (!MP_OBJ_IS_TYPE(config_obj, &mp_type_dict)) {
         mp_raise_TypeError("module_rca must be a dict");
     }
 
+    cfg.module_rca = M5ModuleRCA::config_t();
     mp_map_t *config_map = mp_obj_dict_get_map(config_obj);
 
     for (size_t i = 0; i < config_map->alloc; i++) {
@@ -150,6 +192,7 @@ static void m5_config_helper_unit_rca(mp_obj_t config_obj, m5::M5Unified::config
         mp_raise_TypeError("unit_rca must be a dict");
     }
 
+    cfg.unit_rca = M5UnitRCA::config_t();
     mp_map_t *config_map = mp_obj_dict_get_map(config_obj);
 
     for (size_t i = 0; i < config_map->alloc; i++) {
@@ -214,6 +257,8 @@ static void m5_config_helper(mp_obj_t config_obj, m5::M5Unified::config_t &cfg, 
 
             if (strcmp(key_str, "module_display") == 0) {
                 m5_config_helper_module_display(value, cfg);
+            } else if (strcmp(key_str, "atom_display") == 0) {
+                m5_config_helper_atom_display(value, cfg);
             }
             #if CONFIG_IDF_TARGET_ESP32
             else if (strcmp(key_str, "module_rca") == 0) {
@@ -274,6 +319,14 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
         } else {
             mp_raise_NotImplementedError("module_display is not supported on this board");
         }
+    } else if (cfg.external_display.atom_display) {
+        M5AtomDisplay dsp(cfg.atom_display);
+        if (dsp.init_without_reset()) {
+            M5.addDisplay(dsp);
+            mp_printf(&mp_plat_print, "atom_display added\n");
+        } else {
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("AtomDisplay init failed"));
+        }
     }
     #if CONFIG_IDF_TARGET_ESP32
     else if (cfg.external_display.module_rca) {
@@ -294,7 +347,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_lcd added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_lcd init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("LCD Unit init failed"));
         }
     } else if (cfg.external_display.unit_oled) {
         M5UnitOLED dsp(cfg.unit_oled);
@@ -302,7 +355,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_oled added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_oled init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("OLED Unit init failed"));
         }
     } else if (cfg.external_display.unit_mini_oled) {
         M5UnitMiniOLED dsp(cfg.unit_mini_oled);
@@ -310,7 +363,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_mini_oled added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_mini_oled init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("MiniOLED Unit init failed"));
         }
     } else if (cfg.external_display.unit_glass) {
         M5UnitGLASS dsp(cfg.unit_glass);
@@ -318,7 +371,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_glass added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_glass init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("GLASS Unit init failed"));
         }
     } else if (cfg.external_display.unit_glass2) {
         M5UnitGLASS2 dsp(cfg.unit_glass2);
@@ -326,7 +379,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_glass2 added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_glass2 init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("GLASS2 Unit init failed"));
         }
     }
     #if CONFIG_IDF_TARGET_ESP32
@@ -336,7 +389,7 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
             M5.addDisplay(dsp);
             mp_printf(&mp_plat_print, "unit_rca added\n");
         } else {
-            mp_printf(&mp_plat_print, "unit_rca init failed\n");
+            mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("RCA Unit init failed"));
         }
     }
     #endif
@@ -344,6 +397,60 @@ mp_obj_t m5_add_display(mp_obj_t i2c_bus_in, mp_obj_t addr_in, mp_obj_t dict) {
 
     return m5_getDisplay(mp_obj_new_int(M5.getDisplayCount() - 1));
 }
+
+
+mp_obj_t m5_create_speaker(void) {
+    auto spk = new m5::Speaker_Class();
+    spk_obj_t *o = mp_obj_malloc_with_finaliser(spk_obj_t, &mp_spk_type);
+    o->spk = spk;
+    return MP_OBJ_FROM_PTR(o);
+}
+
+
+mp_obj_t m5_create_mic(void) {
+    auto mic = new m5::Mic_Class();
+    mic_obj_t *o = mp_obj_malloc_with_finaliser(mic_obj_t, &mp_mic_type);
+    o->mic = mic;
+    return MP_OBJ_FROM_PTR(o);
+}
+
+
+static void in_i2c_init(void) {
+    gpio_num_t in_scl = (gpio_num_t)M5.getPin(m5::pin_name_t::in_i2c_scl);
+    gpio_num_t in_sda = (gpio_num_t)M5.getPin(m5::pin_name_t::in_i2c_sda);
+    gpio_num_t ex_scl = (gpio_num_t)M5.getPin(m5::pin_name_t::ex_i2c_scl);
+    gpio_num_t ex_sda = (gpio_num_t)M5.getPin(m5::pin_name_t::ex_i2c_sda);
+    i2c_port_t ex_port = I2C_NUM_0;
+    #if SOC_I2C_NUM == 1
+    i2c_port_t in_port = I2C_NUM_0;
+    #else
+    i2c_port_t in_port = I2C_NUM_1;
+    if (in_scl == ex_scl && in_sda == ex_sda) {
+        in_port = ex_port;
+    }
+    #endif
+
+    if (in_scl != GPIO_NUM_NC || in_sda != GPIO_NUM_NC) {
+        ESP_LOGI("BOARD", "Internal I2C(%d) init", in_port);
+        // if (in_port == I2C_NUM_0) {
+        //     periph_module_enable(PERIPH_I2C0_MODULE);
+        // } else {
+        //     periph_module_enable(PERIPH_I2C1_MODULE);
+        // }
+        i2c_config_t conf;
+        memset(&conf, 0, sizeof(i2c_config_t));
+        conf.mode = I2C_MODE_MASTER;
+        conf.sda_io_num = in_sda;
+        conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+        conf.scl_io_num = in_scl;
+        conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+        conf.master.clk_speed = 100000;
+        // .clk_flags = 0,          /*!< Optional, you can use I2C_SCLK_SRC_FLAG_* flags to choose i2c source clock here. */
+        i2c_param_config(in_port, &conf);
+        i2c_driver_install(in_port, I2C_MODE_MASTER, 0, 0, 0);
+    }
+}
+
 
 // TODO: pass configuration parameters
 mp_obj_t m5_begin(size_t n_args, const mp_obj_t *args) {
@@ -362,23 +469,15 @@ mp_obj_t m5_begin(size_t n_args, const mp_obj_t *args) {
 
     // initial
     M5.begin(cfg);
-    // if (M5.getBoard() == m5::board_t::board_M5StackCoreS3) {
-    //     periph_module_disable(PERIPH_I2C1_MODULE);
-    //     i2c_config_t conf;
-    //     memset(&conf, 0, sizeof(i2c_config_t));
-    //     conf.mode = I2C_MODE_MASTER;
-    //     conf.sda_io_num = GPIO_NUM_12;
-    //     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    //     conf.scl_io_num = GPIO_NUM_11;
-    //     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    //     conf.master.clk_speed = 100000;
-    //     // .clk_flags = 0,          /*!< Optional, you can use I2C_SCLK_SRC_FLAG_* flags to choose i2c source clock here. */
-    //     esp_err_t ret = i2c_param_config(I2C_NUM_1, &conf);
-    //     ESP_LOGE("*", "i2c_param_config: %d", ret);
-    //     ret = i2c_driver_install(I2C_NUM_1, I2C_MODE_MASTER, 0, 0, 0);
-    //     ESP_LOGE("*", "i2c_driver_install: %d", ret);
+    in_i2c_init();
+    // if (M5.getBoard() != m5::board_t::board_M5StackCoreS3
+    //     && M5.getBoard() != m5::board_t::board_M5StackCoreS3SE
+    //     && M5.getBoard() != m5::board_t::board_M5StackCore2
+    //     && M5.getBoard() != m5::board_t::board_M5Tough
+    //     && M5.getBoard() != m5::board_t::board_M5AtomS3
+    // ) {
+    M5.In_I2C.release();
     // }
-    // M5.In_I2C.release();
 
     M5.Display.clear();
     // default display

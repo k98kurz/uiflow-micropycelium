@@ -1,6 +1,8 @@
 
-RCAUnit
-=======
+RCA Unit
+=========
+
+.. sku: U155
 
 .. include:: ../refs/unit.rca.ref
 
@@ -8,45 +10,54 @@ Unit RCA is a female jack terminal block for transmitting composite video (audio
 
 Support the following products:
 
-|RCAUnit|
-
-Micropython Example::
-
-    import os, sys, io
-    import M5
-    from M5 import *
-    from unit import RCAUnit
-    rca = RCAUnit()
-    rca.display.fill(0)
-
-.. only:: builder_html
-
-class RCAUnit
--------------
-
-Constructors
-------------
-
-.. class:: RCAUnit(port, width, height, signal_type, output_level, use_psram)
-
-    Initialize the Unit RCA
-
-    :param tuple port: The port to which the Unit RCA is connected. port[0]: not used, port[1]: dac pin.
-    :param int width: The width of the RCA display.
-    :param int height: The height of the RCA display.
-    :param int signal_type: The signal type of the RCA display. NTSC&#x3D;0, NTSC_J&#x3D;1, PAL&#x3D;2, PAL_M&#x3D;3, PAL_N&#x3D;4.
-    :param int output_level: The output level of the RCA display.
-    :param int use_psram: The use of psram of the RCA display.
-
-    UIFLOW2:
-
-        |init.svg|
+    |RCAUnit|
 
 
-Methods
+UiFlow2 Example
+---------------
+
+Draw Text
+^^^^^^^^^
+
+Open the |core2_rca_example.m5f2| project in UiFlow2.
+
+This example displays the text "RCA" on the screen.
+
+UiFlow2 Code Block:
+
+    |example.png|
+
+Example output:
+
+    None
+
+
+MicroPython Example
+-------------------
+
+Draw Text
+^^^^^^^^^
+
+This example displays the text "RCA" on the screen.
+
+MicroPython Code Block:
+
+    .. literalinclude:: ../../../examples/unit/rca/core2_rca_example.py
+        :language: python
+        :linenos:
+
+Example output:
+
+    None
+
+
+**API**
 -------
 
+Class RCAUnit
+^^^^^^^^^^^^^
 
+.. autoclass:: unit.rca.RCAUnit
+    :members:
 
-
-
+    RCAUnit class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.

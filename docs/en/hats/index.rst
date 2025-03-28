@@ -11,6 +11,7 @@ HAT
     dlight.rst
     env.rst
     finger.rst
+    heart.rst
     joyc.rst
     joystick.rst
     mini_encoder.rst
@@ -20,7 +21,7 @@ HAT
     pir.rst
     servo.rst
     servo8.rst
+    speaker.rst
     thermal.rst
     tof.rst
     vibrator.rst
-    heart.rst

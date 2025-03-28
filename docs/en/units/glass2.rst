@@ -1,6 +1,5 @@
-
-Glass2Unit
-==========
+Glass2 Unit
+===========
 
 .. include:: ../refs/unit.glass2.ref
 
@@ -8,41 +7,54 @@ Glass2 Unit is a 1.51-inch transparent OLED display unit that adopts the SSD1309
 
 Support the following products:
 
-|Glass2Unit|
+    |Glass2Unit|
 
-Micropython Example::
-    from unit import Glass2Unit
-    from hardware import *
-    i2c0 = I2C(0, scl=Pin(33), sda=Pin(32), freq=100000)
-    display = Glass2Unit(i2c).display
-    
-    display.clear(0xffffff) # Clear screen
 
-.. only:: builder_html
+UiFlow2 Example
+---------------
+
+Draw Text
+^^^^^^^^^
+
+Open the |cores3_glass2_example.m5f2| project in UiFlow2.
+
+This example displays the text "GLASS2" on the screen.
+
+UiFlow2 Code Block:
+
+    |example.png|
+
+Example output:
+
+    None
+
+
+MicroPython Example
+-------------------
+
+Draw Text
+^^^^^^^^^
+
+This example displays the text "GLASS2" on the screen.
+
+MicroPython Code Block:
+
+    .. literalinclude:: ../../../examples/unit/glass2/cores3_glass2_example.py
+        :language: python
+        :linenos:
+
+Example output:
+
+    None
+
+
+**API**
+-------
 
 class Glass2Unit
 ----------------
 
-Constructors
-------------
+.. autoclass:: unit.glass2.Glass2Unit
+    :members:
 
-.. class:: Glass2Unit(port, address, freq)
-
-    Initialize the Unit Glass2
-
-    :param tuple port: The port to which the Unit Glass2 is connected. port[0]: scl pin, port[1]: sda pin.
-    :param int|list|tuple address: I2C address of the Unit Glass2, default is 0x3D.
-    :param int freq: I2C frequency of the Unit Glass2.
-
-    UIFLOW2:
-
-        |init.svg|
-
-
-Methods
--------
-
-
-
-
-
+    Glass2Unit class inherits Display class, See :ref:`hardware.Display <hardware.Display>` for more details.
